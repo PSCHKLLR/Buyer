@@ -6,15 +6,14 @@ import com.example.buyer.model.Book
 class Datasource() {
     fun loadBooks(): List<Book> {
         return listOf<Book>(
-            Book(R.string.title1, R.drawable._504_peaceful_reflections_mhc),
-            Book(R.string.title1, R.drawable._504_peaceful_reflections_mhc),
-            Book(R.string.title1, R.drawable._504_peaceful_reflections_mhc),
-            Book(R.string.title1, R.drawable._504_peaceful_reflections_mhc),
-            Book(R.string.title1, R.drawable._504_peaceful_reflections_mhc),
-            Book(R.string.title1, R.drawable._504_peaceful_reflections_mhc),
-            Book(R.string.title1, R.drawable._504_peaceful_reflections_mhc),
-            Book(R.string.title1, R.drawable._504_peaceful_reflections_mhc),
-            Book(R.string.title1, R.drawable._504_peaceful_reflections_mhc)
+            Book(R.string.title1, R.drawable._504_peaceful_reflections_mhc, R.string.description1, true, 5, 125.69) ,
+            Book(R.string.title1, R.drawable._504_peaceful_reflections_mhc, R.string.description1, true, 5, 125.69),
+            Book(R.string.title1, R.drawable._504_peaceful_reflections_mhc, R.string.description1, true, 5, 125.69),
+            Book(R.string.title1, R.drawable._504_peaceful_reflections_mhc, R.string.description1, true, 5, 125.69),
+            Book(R.string.title1, R.drawable._504_peaceful_reflections_mhc, R.string.description1, true, 5, 125.69),
+            Book(R.string.title1, R.drawable._504_peaceful_reflections_mhc, R.string.description1, true, 5, 125.69),
+            Book(R.string.title1, R.drawable._504_peaceful_reflections_mhc, R.string.description1, true, 5, 125.69),
+            Book(R.string.title1, R.drawable._504_peaceful_reflections_mhc, R.string.description1, true, 5, 125.69),
         )
     }
 }

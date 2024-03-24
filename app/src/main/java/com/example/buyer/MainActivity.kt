@@ -264,7 +264,7 @@ fun BookCard(book: Book, modifier: Modifier = Modifier){
     ) {
 
         Image(
-            painterResource(book.imageResId),
+            painterResource(book.bookImg),
             contentDescription = "books",
             modifier = Modifier
                 .fillMaxHeight()
@@ -275,7 +275,7 @@ fun BookCard(book: Book, modifier: Modifier = Modifier){
             contentScale = ContentScale.FillHeight,
         )
         Text(
-            text = LocalContext.current.getString(book.stringResId),
+            text = LocalContext.current.getString(book.bookTitle),
             color = Color.White,
             fontSize = 16.sp,
             modifier = Modifier

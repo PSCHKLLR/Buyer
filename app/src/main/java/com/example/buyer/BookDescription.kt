@@ -45,6 +45,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.buyer.data.Datasource
+import com.example.buyer.model.Book
 
 class BookDescription : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,10 +59,12 @@ class BookDescription : ComponentActivity() {
 
 @Composable
 fun Description(modifier: Modifier = Modifier) {
-    var isFav: Boolean by remember {
-        mutableStateOf(false)
+    val bookList: List<Book> = Datasource().loadBooks()
+    var isFav by remember {
+        mutableStateOf(bookList[0].isFav)
     }
-    var fav: ImageVector = when(isFav){
+
+    val fav: ImageVector = when(isFav){
         false -> Icons.Filled.FavoriteBorder
         else -> Icons.Filled.Favorite
     }
@@ -95,8 +99,10 @@ fun Description(modifier: Modifier = Modifier) {
                 IconButton(onClick = {
                     if (!isFav){
                         isFav = true
+                        bookList[0].isFav = true
                     } else{
-                      isFav = false
+                        isFav = false
+                        bookList[0].isFav = false
                     }
                 }) {
                     Icon(

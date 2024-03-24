@@ -129,7 +129,7 @@ fun ItemCheck(book: Book, modifier: Modifier = Modifier){
         ) {
             Box(modifier = Modifier.padding(8.dp)) {
                 Image(
-                    painterResource(book.imageResId),
+                    painterResource(book.bookImg),
                     contentDescription = "books",
                     modifier = Modifier
                         .fillMaxHeight()
@@ -143,7 +143,7 @@ fun ItemCheck(book: Book, modifier: Modifier = Modifier){
                     .padding(16.dp)
             ){
                 Text(
-                    text = LocalContext.current.getString(book.stringResId),
+                    text = LocalContext.current.getString(book.bookTitle),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold
                 )
