@@ -1,9 +1,6 @@
 
-package com.example.buyer
+package com.example.buyer.screen
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -42,26 +39,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.buyer.data.Datasource
+import androidx.navigation.NavController
+import com.example.buyer.R
 import com.example.buyer.model.Book
 
-class BookDescription : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            BookDetail()
-        }
-    }
-}
-
 @Composable
-fun Description(modifier: Modifier = Modifier) {
-    val bookList: List<Book> = Datasource().loadBooks()
+fun Description(navController: NavController, book:Book, modifier: Modifier = Modifier) {
     var isFav by remember {
-        mutableStateOf(bookList[0].isFav)
+        mutableStateOf(book.isFav)
     }
 
     val fav: ImageVector = when(isFav){
@@ -89,7 +76,7 @@ fun Description(modifier: Modifier = Modifier) {
                     .fillMaxWidth()){
                 IconButton(
                     onClick = {
-
+                        navController.navigateUp()
                 }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -99,15 +86,16 @@ fun Description(modifier: Modifier = Modifier) {
                 IconButton(onClick = {
                     if (!isFav){
                         isFav = true
-                        bookList[0].isFav = true
+                        book.isFav = true
                     } else{
                         isFav = false
-                        bookList[0].isFav = false
+                        book.isFav = false
                     }
                 }) {
                     Icon(
                         imageVector = fav,
-                        contentDescription = "wishList")
+                        contentDescription = "wishList",
+                        tint = Color.Red)
                 }
             }
         }
@@ -197,11 +185,12 @@ fun Description(modifier: Modifier = Modifier) {
 
     }
 }
-
-@Preview(showBackground = true, showSystemUi = true,
-    device = "id:pixel_3a"
-)
-@Composable
-fun BookDetail() {
-    Description(modifier = Modifier.fillMaxSize())
-}
+//
+//@Preview(showBackground = true, showSystemUi = true,
+//    device = "id:pixel_3a"
+//)
+//@Composable
+//fun BookDetail() {
+//    val bookList: List<Book> = Datasource().loadBooks()
+//    Description(bookList[0], modifier = Modifier.fillMaxSize())
+//}
