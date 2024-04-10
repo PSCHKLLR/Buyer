@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.ShoppingCartCheckout
@@ -29,10 +31,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,14 +43,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.buyer.Navigation
-import com.example.buyer.R
 import com.example.buyer.data.Datasource
 import com.example.buyer.model.Book
+import com.example.buyer.model.CartItem
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MyCart(navController: NavController, modifier: Modifier = Modifier) {
-    val bookList: List<Book> = Datasource().loadBooks()
+fun MyCart(cartList: ArrayList<CartItem>, navController: NavController, modifier: Modifier = Modifier) {
     val scrollState = rememberScrollState()
 
     Column(modifier = modifier) {
@@ -83,7 +84,7 @@ fun MyCart(navController: NavController, modifier: Modifier = Modifier) {
                     }
                     Icon(
                         modifier = Modifier
-                            .clickable {  }
+                            .clickable { }
                             .align(Alignment.CenterVertically),
                         imageVector = Icons.Filled.Edit,
                         contentDescription = null
@@ -91,80 +92,38 @@ fun MyCart(navController: NavController, modifier: Modifier = Modifier) {
 
                 }
             },
-            content = {
-                Column (modifier = Modifier
-                    .padding(top = 64.dp)
-                    .verticalScroll(state = scrollState)
-                ){
-                    ItemCheck(navController = navController,book = bookList[0], modifier = Modifier.height(200.dp))
-                    ItemCheck(navController = navController,book = bookList[0], modifier = Modifier.height(200.dp))
-                    ItemCheck(navController = navController,book = bookList[0], modifier = Modifier.height(200.dp))
-                }
-            },
             bottomBar = {
                 Row(
-                    modifier = Modifier.fillMaxSize(),
+//                    modifier = Modifier.fillMaxSize(),
                     verticalAlignment = Alignment.Bottom) {
-                    Column {
-                        Column (
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(color = Color.White)
-                        ){
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp)
-                                    .padding(top = 8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(text = "Subtotal")
-                                Text(text = "RM125.00")
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(text = "Tax")
-                                Text(text = "RM125.00")
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(
-                                    text = "Total",
-                                    fontWeight = FontWeight.Bold
+                    Box(
+                        contentAlignment = Alignment.CenterEnd,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .size(80.dp)
+                            .background(
+                                color = Color.DarkGray,
+                                shape = RoundedCornerShape(
+                                    topStart = 8.dp,
+                                    topEnd = 8.dp
                                 )
-                                Text(
-                                    text = "RM125.00",
-                                    fontWeight = FontWeight.Bold
-                                    )
-                            }
-                        }
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .size(80.dp)
-                                .background(
-                                    color = Color.DarkGray,
-                                    shape = RoundedCornerShape(
-                                        topStart = 8.dp,
-                                        topEnd = 8.dp
-                                    )
-                                )
-                        ) {
+                            )
+                    ) {
+                        Row {
+                            Text(
+                                text = "RM${total(cartList)}",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                color = Color.White,
+                                modifier = Modifier.align(Alignment.CenterVertically)
+                            )
                             Button(
                                 onClick = {
-                                    /*TODO*/
+                                   navController.navigate(Navigation.Checkout.name)
                                 },
                                 modifier = Modifier
-                                    .height(50.dp),
+                                    .height(50.dp)
+                                    .padding(horizontal = 16.dp),
                                 shape = RoundedCornerShape(8.dp)
                             ) {
                                 Icon(
@@ -181,12 +140,46 @@ fun MyCart(navController: NavController, modifier: Modifier = Modifier) {
                     }
                 }
             }
-        )
+        ){
+            Column (modifier = Modifier
+                .fillMaxSize()
+                .padding(it)
+                .verticalScroll(state = scrollState)
+            ){
+                if (cartList.isEmpty()){
+                    Column (
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 280.dp)
+                            .alpha(.3f),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ){
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.MenuBook,
+                            contentDescription = null
+                        )
+                        Text(
+                            text = "krik krik...",
+                            fontSize = 20.sp,
+                        )
+                    }
+                } else{
+                    cartList.forEach {
+                        ItemCheck(
+                            navController = navController,
+                            cartItem = it,
+                            modifier = Modifier.height(200.dp)
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
 @Composable
-fun ItemCheck(navController: NavController, book: Book, modifier: Modifier = Modifier){
+fun ItemCheck(navController: NavController, cartItem: CartItem, modifier: Modifier = Modifier){
 //    val mContext = LocalContext.current
     Box(modifier = modifier) {
         Row(
@@ -200,12 +193,13 @@ fun ItemCheck(navController: NavController, book: Book, modifier: Modifier = Mod
         ) {
             Box(modifier = Modifier.padding(8.dp)) {
                 Image(
-                    painterResource(book.bookImg),
+                    painterResource(cartItem.book.bookImg),
                     contentDescription = "books",
                     modifier = Modifier
                         .fillMaxHeight()
+                        .aspectRatio(3/4f)
                         .clip(RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.FillHeight,
+                    contentScale = ContentScale.FillBounds,
                 )
             }
             Column (
@@ -214,18 +208,18 @@ fun ItemCheck(navController: NavController, book: Book, modifier: Modifier = Mod
                     .padding(16.dp)
             ){
                 Text(
-                    text = LocalContext.current.getString(book.bookTitle),
+                    text = cartItem.book.bookTitle,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = LocalContext.current.getString(R.string.author1),
+                    text = cartItem.book.bookAuthor,
                 )
                 Text(
-                    text = "RM125.00"
+                    text = "RM${cartItem.book.price}"
                 )
                 Text(
-                    text = "Quantity: 1"
+                    text = "Quantity: ${cartItem.quantity}"
                 )
             }
         }
@@ -236,5 +230,24 @@ fun ItemCheck(navController: NavController, book: Book, modifier: Modifier = Mod
 @Composable
 fun PrevCart(modifier: Modifier = Modifier){
     val navController = rememberNavController()
-    MyCart(navController = navController, modifier = Modifier.fillMaxSize())
+    val bookList: List<Book> = Datasource().loadBooks()
+    val cartList = ArrayList<CartItem>()
+    cartList.add(
+        CartItem(bookList[0], 1)
+    )
+    cartList.add(
+        CartItem(bookList[1], 3)
+    )
+    cartList.add(
+        CartItem(bookList[2], 1)
+    )
+    MyCart(cartList, navController = navController, modifier = Modifier.fillMaxSize())
+}
+
+fun total(cartList: ArrayList<CartItem>): Double{
+    var total = 0.00
+    cartList.forEach {
+        total += (it.book.price * it.quantity)
+    }
+    return total
 }

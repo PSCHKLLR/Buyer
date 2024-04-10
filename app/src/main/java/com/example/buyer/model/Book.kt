@@ -4,10 +4,11 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
 data class Book(
-    @StringRes val bookTitle: Int,
+    val bookTitle: String,
     @DrawableRes val bookImg: Int,
     @StringRes val bookDes: Int,
-    var isFav: Boolean = false,
+    val bookAuthor: String,
+    val bookGenre: String,
     val quantity: Int,
     val price: Double
 )

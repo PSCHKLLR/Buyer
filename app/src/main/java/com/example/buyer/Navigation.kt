@@ -8,10 +8,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.buyer.data.Datasource
 import com.example.buyer.model.Book
+import com.example.buyer.model.CartItem
+import com.example.buyer.screen.Checkout
 import com.example.buyer.screen.Description
 import com.example.buyer.screen.Home
 import com.example.buyer.screen.MyCart
 import com.example.buyer.screen.Search
+import com.example.buyer.screen.TradeIn
+import com.example.buyer.screen.WishList
 
 enum class Navigation {
     Home,
@@ -19,11 +23,24 @@ enum class Navigation {
     Cart,
     Search,
     TradeIn,
-    Wishlist
+    Wishlist,
+    Checkout
 }
 
 @Composable
 fun Navigate(){
+    val bookList: List<Book> = Datasource().loadBooks() //Temp
+    var cartList = ArrayList<CartItem>() //Temp
+    cartList.add(
+        CartItem(bookList[0], 1)
+    )
+    cartList.add(
+        CartItem(bookList[1], 3)
+    )
+    cartList.add(
+        CartItem(bookList[2], 1)
+    )
+    var bookArray = ArrayList<Book>() //Temp
     val navController = rememberNavController()
     NavHost(
         navController = navController,
@@ -33,15 +50,22 @@ fun Navigate(){
             Home(navController = navController, modifier = Modifier.fillMaxSize())
         }
         composable(route = Navigation.BookDescription.name){
-            val bookList: List<Book> = Datasource().loadBooks()
-            Description(navController = navController,bookList[0], modifier = Modifier.fillMaxSize())
+            Description(bookList[0], navController = navController, modifier = Modifier.fillMaxSize())
         }
         composable(route = Navigation.Cart.name){
-            MyCart(navController = navController,modifier = Modifier.fillMaxSize())
+            MyCart(cartList, navController = navController, modifier = Modifier.fillMaxSize())
         }
         composable(route = Navigation.Search.name){
-            Search(modifier = Modifier.fillMaxSize())
+            Search(navController = navController, modifier = Modifier.fillMaxSize())
         }
-
+        composable(route = Navigation.TradeIn.name){
+            TradeIn(navController = navController, modifier = Modifier.fillMaxSize())
+        }
+        composable(route = Navigation.Wishlist.name){
+            WishList(bookArray, navController = navController, modifier = Modifier.fillMaxSize())
+        }
+        composable(route = Navigation.Checkout.name){
+            Checkout(cartList, navController = navController, modifier = Modifier.fillMaxSize())
+        }
     }
 }

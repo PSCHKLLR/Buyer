@@ -39,16 +39,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.buyer.R
+import androidx.navigation.compose.rememberNavController
+import com.example.buyer.data.Datasource
 import com.example.buyer.model.Book
 
 @Composable
-fun Description(navController: NavController, book:Book, modifier: Modifier = Modifier) {
+fun Description(book:Book, navController: NavController, modifier: Modifier = Modifier) {
     var isFav by remember {
-        mutableStateOf(book.isFav)
+        mutableStateOf(false)
     }
 
     val fav: ImageVector = when(isFav){
@@ -60,7 +62,7 @@ fun Description(navController: NavController, book:Book, modifier: Modifier = Mo
     Column(modifier = modifier) {
         Box {
             Image(
-                painterResource(id = R.drawable._504_peaceful_reflections_mhc),
+                painterResource(book.bookImg),
                 contentDescription = "Item",
                 modifier = Modifier
                     .clip(RectangleShape)
@@ -86,10 +88,8 @@ fun Description(navController: NavController, book:Book, modifier: Modifier = Mo
                 IconButton(onClick = {
                     if (!isFav){
                         isFav = true
-                        book.isFav = true
                     } else{
                         isFav = false
-                        book.isFav = false
                     }
                 }) {
                     Icon(
@@ -109,7 +109,7 @@ fun Description(navController: NavController, book:Book, modifier: Modifier = Mo
             .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween) {
             Text(
-                LocalContext.current.getString(R.string.title1),
+                text = book.bookTitle,
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -121,7 +121,7 @@ fun Description(navController: NavController, book:Book, modifier: Modifier = Mo
             )
         }
         Text(
-            LocalContext.current.getString(R.string.author1),
+            text = book.bookAuthor,
             modifier = Modifier.padding(horizontal = 8.dp)
         )
 //        var rating by remember {
@@ -138,7 +138,7 @@ fun Description(navController: NavController, book:Book, modifier: Modifier = Mo
             )
         )
         Text(
-            LocalContext.current.getString(R.string.description1),
+            text = LocalContext.current.getString(book.bookDes),
             fontWeight = FontWeight.Light,
             fontSize = 12.sp,
             textAlign = TextAlign.Justify,
@@ -185,12 +185,11 @@ fun Description(navController: NavController, book:Book, modifier: Modifier = Mo
 
     }
 }
-//
-//@Preview(showBackground = true, showSystemUi = true,
-//    device = "id:pixel_3a"
-//)
-//@Composable
-//fun BookDetail() {
-//    val bookList: List<Book> = Datasource().loadBooks()
-//    Description(bookList[0], modifier = Modifier.fillMaxSize())
-//}
+
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun BookDetail() {
+    val bookList: List<Book> = Datasource().loadBooks()
+    val navController = rememberNavController()
+    Description( bookList[0],navController, modifier = Modifier.fillMaxSize())
+}
