@@ -35,26 +35,40 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.buyer.data.Datasource
 import com.example.buyer.model.Book
 
+@Composable
+fun Search(viewModel: SearchViewModel, navController: NavController) {
+    val result by viewModel.searchResult.collectAsStateWithLifecycle()
+    
+    Search(
+        searchQuery = viewModel.searchQuery,
+        searchResults = result,
+        onSearchQueryChange = { viewModel.onSearchQueryChange(it)},
+        navController = navController)
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Search(navController: NavController, modifier: Modifier = Modifier){
+fun Search(
+    searchQuery: String,
+    searchResults: List<Book>,
+    onSearchQueryChange: (String) -> Unit,
+    navController: NavController,
+    modifier: Modifier = Modifier
+){
     var text by rememberSaveable {
-        mutableStateOf("")
+        mutableStateOf(searchQuery)
     }
     var active by rememberSaveable {
         mutableStateOf(false)
     }
-    var history = remember {
-        mutableStateListOf(
-            ""
-        )
-    }
+    var history = remember { mutableStateListOf<String>() }
     Scaffold(modifier = modifier) {
         Box(
             Modifier
@@ -66,7 +80,8 @@ fun Search(navController: NavController, modifier: Modifier = Modifier){
                     .align(Alignment.TopCenter)
                     .semantics { traversalIndex = -1f },
                 query = text,
-                onQueryChange = { text = it },
+                onQueryChange = { text = it
+                                onSearchQueryChange(it)},
                 onSearch = {
                     history.add(text)
                     active = false
@@ -128,10 +143,14 @@ fun Search(navController: NavController, modifier: Modifier = Modifier){
                 modifier = Modifier
                     .padding(top = 64.dp)
             ) {
-                val bookList: List<Book> = Datasource().loadBooks()
-                items(bookList.size){
-                    BookCard(navController = navController, book = bookList[it])
-                }
+                items(
+                    count = searchResults.size,
+                    key = null,
+                    itemContent = { i ->
+                        val book = searchResults[i]
+                        BookCard(navController = navController, book = book)
+                    }
+                )
             }
         }
         
@@ -142,6 +161,6 @@ fun Search(navController: NavController, modifier: Modifier = Modifier){
 @Composable
 fun PrevSearch(){
     val navController  = rememberNavController()
-    Search(navController = navController, modifier = Modifier.fillMaxSize())
+//    Search(navController = navController, modifier = Modifier.fillMaxSize())
 }
 

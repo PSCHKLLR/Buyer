@@ -1,12 +1,14 @@
 package com.example.buyer.screen
 
 import android.annotation.SuppressLint
+import android.os.Bundle
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -18,6 +20,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -25,15 +29,22 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Article
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.filled.Castle
 import androidx.compose.material.icons.filled.ChildCare
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Inventory
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.PersonSearch
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.TheaterComedy
+import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -103,12 +114,12 @@ fun Home(navController: NavController ,modifier: Modifier = Modifier){
         ListItem(
             title = "Fiction",
             onClick = { },
-            icon = Icons.Filled.Menu
+            icon = Icons.Filled.Description
         ),
         ListItem(
             title = "Non-Fiction",
             onClick = { },
-            icon = Icons.Filled.Menu
+            icon = Icons.AutoMirrored.Filled.Article
         ),
         ListItem(
             title = "Drama",
@@ -128,27 +139,27 @@ fun Home(navController: NavController ,modifier: Modifier = Modifier){
         ListItem(
             title = "Fantasy",
             onClick = { },
-            icon = Icons.Filled.Menu
+            icon = Icons.Filled.Castle
         ),
         ListItem(
             title = "Mystery",
             onClick = { },
-            icon = Icons.Filled.Menu
+            icon = Icons.Filled.PersonSearch
         ),
         ListItem(
             title = "Romance",
             onClick = { },
-            icon = Icons.Filled.Menu
+            icon = Icons.Filled.Favorite
         ),
         ListItem(
             title = "Thriller",
             onClick = { },
-            icon = Icons.Filled.Menu
+            icon = Icons.Filled.WaterDrop
         ),
         ListItem(
             title = "Novel",
             onClick = { },
-            icon = Icons.Filled.Menu
+            icon = Icons.Filled.Book
         )
     )
 
@@ -165,7 +176,7 @@ fun Home(navController: NavController ,modifier: Modifier = Modifier){
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
+    val bookList = Datasource().loadBooks()
     Column(modifier = modifier) {
         ModalNavigationDrawer(
             drawerState = drawerState,
@@ -199,7 +210,21 @@ fun Home(navController: NavController ,modifier: Modifier = Modifier){
                             }
                         },
                         selected = false,
-                        onClick = { navController.navigate(Navigation.TradeIn.name) }
+                        onClick = { navController.navigate(Navigation.Cart.name) }
+                    )
+                    NavigationDrawerItem(
+                        label = {
+                            Row (
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ){
+                                Icon(imageVector = Icons.Filled.Inventory, contentDescription = null)
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Text(text = "Orders")
+                            }
+                        },
+                        selected = false,
+                        onClick = { navController.navigate(Navigation.Orders.name) }
                     )
                     NavigationDrawerItem(
                         label = {
@@ -213,7 +238,7 @@ fun Home(navController: NavController ,modifier: Modifier = Modifier){
                             }
                         },
                         selected = false,
-                        onClick = { navController.navigate(Navigation.TradeIn.name) }
+                        onClick = { navController.navigate(Navigation.Search.name) }
                     )
                     NavigationDrawerItem(
                         label = {
@@ -356,7 +381,7 @@ fun Home(navController: NavController ,modifier: Modifier = Modifier){
                                     )
                                     BookSlider(
                                         navController = navController,
-                                        bookList = Datasource().loadBooks(),
+                                        bookList = bookList,
                                         modifier = Modifier.height(200.dp)
                                     )
                                     Text(
@@ -368,7 +393,7 @@ fun Home(navController: NavController ,modifier: Modifier = Modifier){
                                     )
                                     BookSlider(
                                         navController = navController,
-                                        bookList = Datasource().loadBooks().shuffled(),
+                                        bookList = bookList.shuffled(),
                                         modifier = Modifier.height(200.dp)
                                     )
                                     Text(
@@ -380,17 +405,17 @@ fun Home(navController: NavController ,modifier: Modifier = Modifier){
                                     )
                                     BookSlider(
                                         navController = navController,
-                                        bookList = Datasource().loadBooks().shuffled(),
+                                        bookList = bookList.shuffled(),
                                         modifier = Modifier.height(200.dp)
                                     )
                                     BookSlider(
                                         navController = navController,
-                                        bookList = Datasource().loadBooks().shuffled(),
+                                        bookList = bookList.shuffled(),
                                         modifier = Modifier.height(200.dp)
                                     )
                                     BookSlider(
                                         navController = navController,
-                                        bookList = Datasource().loadBooks().shuffled(),
+                                        bookList = bookList.shuffled(),
                                         modifier = Modifier.height(200.dp)
                                     )
                                 }
@@ -403,17 +428,22 @@ fun Home(navController: NavController ,modifier: Modifier = Modifier){
                                 contentAlignment = Alignment.TopStart
                             ){
                                 LazyColumn {
-                                    items(genres.size) {
+                                    items(genres) {
                                         Row (
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .clickable {
-                                                    genres[it].onClick
+                                                    it.onClick
                                                 }
                                                 .padding(16.dp),
                                             verticalAlignment = Alignment.CenterVertically
                                         ){
-                                            Text(text = genres[it].title)
+                                            Icon(
+                                                imageVector = it.icon,
+                                                contentDescription = null
+                                            )
+                                            Spacer(modifier = Modifier.width(16.dp))
+                                            Text(text = it.title)
                                         }
                                     }
                                 }
@@ -449,6 +479,7 @@ fun BookCard(navController: NavController, book: Book){
                 .clip(RoundedCornerShape(4.dp))
                 .clickable {
 //                    mContext.startActivity(Intent(mContext, BookDescription::class.java))
+
                     navController.navigate(Navigation.BookDescription.name)
 
                 },
@@ -491,6 +522,7 @@ fun BookSlider(navController: NavController, bookList: List<Book>, modifier: Mod
         }
     }
 }
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

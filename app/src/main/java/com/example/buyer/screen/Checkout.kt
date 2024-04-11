@@ -3,15 +3,24 @@ package com.example.buyer.screen
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ShoppingCartCheckout
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -27,11 +36,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.buyer.model.CartItem
+import com.example.buyer.Navigation
+import com.example.buyer.model.Transaction
+import java.text.NumberFormat
+import java.util.Locale
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Checkout(cartList: ArrayList<CartItem>, navController: NavController, modifier: Modifier = Modifier) {
+fun Checkout(transaction: Transaction, navController: NavController, modifier: Modifier = Modifier) {
+    val scrollState = rememberScrollState()
+
     Scaffold (
         modifier = modifier,
         topBar = {
@@ -71,12 +85,38 @@ fun Checkout(cartList: ArrayList<CartItem>, navController: NavController, modifi
                 )
 
             }
+        },
+        bottomBar = {
+            Box (
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ){
+                Button(
+                    onClick = { navController.navigate(Navigation.Orders.name) },
+                    modifier = Modifier
+                        .padding(16.dp),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        text = "Place order",
+                        modifier = Modifier.padding(4.dp)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = null,
+                        modifier = Modifier.padding(4.dp)
+                    )
+                }
+            }
         }
     ){
         Column(
             modifier = Modifier
                 .padding(it)
                 .fillMaxSize()
+                .verticalScroll(state = scrollState)
         ) {
             Row(
                 modifier = Modifier
@@ -91,6 +131,7 @@ fun Checkout(cartList: ArrayList<CartItem>, navController: NavController, modifi
                     text = "Shipping",
                     fontWeight = FontWeight.SemiBold
                 )
+                Spacer(modifier = Modifier.width(88.dp))
                 Column {
                     Text(
                         text = "Standard Delivery",
@@ -98,20 +139,22 @@ fun Checkout(cartList: ArrayList<CartItem>, navController: NavController, modifi
                         modifier = Modifier
                             .fillMaxWidth()
                     )
+                    Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         text = "DELIVERY - FREE",
                         textAlign = TextAlign.Right,
                         modifier = Modifier
                             .fillMaxWidth()
                     )
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Name",
+                        text = "MUHAMMAD RIDWAN",
                         textAlign = TextAlign.Right,
                         modifier = Modifier
                             .fillMaxWidth()
                     )
                     Text(
-                        text = "Address",
+                        text = "1072, JALAN INDAH 8, KAMPUNG AMPANG INDAH, 68000 AMPANG, SELANGOR",
                         textAlign = TextAlign.Right,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -137,6 +180,7 @@ fun Checkout(cartList: ArrayList<CartItem>, navController: NavController, modifi
                         text = "Select payment method",
                         textAlign = TextAlign.Right,
                     )
+//                    transaction.paymentMethod
                 }
             }
             HorizontalDivider()
@@ -153,15 +197,16 @@ fun Checkout(cartList: ArrayList<CartItem>, navController: NavController, modifi
                     text = "Billing Address",
                     fontWeight = FontWeight.SemiBold
                 )
+                Spacer(modifier = Modifier.width(48.dp))
                 Column {
                     Text(
-                        text = "NAME",
+                        text = "MUHAMMAD RIDWAN",
                         textAlign = TextAlign.Right,
                         modifier = Modifier
                             .fillMaxWidth()
                     )
                     Text(
-                        text = "ADDRESS",
+                        text = "1072, JALAN INDAH 8, KAMPUNG AMPANG INDAH, 68000 AMPANG, SELANGOR",
                         textAlign = TextAlign.Right,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -187,10 +232,11 @@ fun Checkout(cartList: ArrayList<CartItem>, navController: NavController, modifi
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = "RM69.69",
+                        text = NumberFormat.getCurrencyInstance(Locale("ms", "MY")).format(transaction.calSubtotal()),
                         textAlign = TextAlign.Right
                     )
                 }
+                Spacer(modifier = Modifier.height(4.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -201,8 +247,29 @@ fun Checkout(cartList: ArrayList<CartItem>, navController: NavController, modifi
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = "RM69.69",
+                        text = NumberFormat.getCurrencyInstance(Locale("ms", "MY")).format(transaction.calTax()),
                         textAlign = TextAlign.Right
+                    )
+                }
+            }
+            HorizontalDivider()
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+
+                    }
+                    .padding(horizontal = 16.dp, vertical = 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Voucher",
+                    fontWeight = FontWeight.SemiBold
+                )
+                Column {
+                    Text(
+                        text = "Select Voucher",
+                        textAlign = TextAlign.Right,
                     )
                 }
             }
@@ -221,19 +288,19 @@ fun Checkout(cartList: ArrayList<CartItem>, navController: NavController, modifi
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = "RM69.69",
+                    text = NumberFormat.getCurrencyInstance(Locale("ms", "MY")).format(transaction.calTotal()),
                     textAlign = TextAlign.Right,
                     fontWeight = FontWeight.SemiBold
                 )
             }
-            HorizontalDivider()
         }
     }
 }
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PrevCheck() {
-    var cartList = ArrayList<CartItem>()
     val navController = rememberNavController()
-    Checkout(cartList = cartList, navController = navController, modifier = Modifier.fillMaxSize())
+    val transaction = Transaction()
+
+    Checkout(transaction = transaction, navController = navController, modifier = Modifier.fillMaxSize())
 }

@@ -1,6 +1,6 @@
 package com.example.buyer.model
 
-data class CartItem(
+class CartItem(
     val book: Book,
-    val quantity: Int
+    var quantity: Int
 )

@@ -46,9 +46,11 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.buyer.data.Datasource
 import com.example.buyer.model.Book
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
-fun Description(book:Book, navController: NavController, modifier: Modifier = Modifier) {
+fun Description(book: Book, navController: NavController, modifier: Modifier = Modifier) {
     var isFav by remember {
         mutableStateOf(false)
     }
@@ -114,7 +116,7 @@ fun Description(book:Book, navController: NavController, modifier: Modifier = Mo
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "RM125.00",
+                text = NumberFormat.getCurrencyInstance(Locale("ms", "MY")).format(book.price),
                 fontSize = 25.sp,
                 fontWeight = FontWeight.Black,
                 color = Color.Blue
