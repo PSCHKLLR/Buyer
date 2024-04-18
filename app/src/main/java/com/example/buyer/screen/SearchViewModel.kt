@@ -1,6 +1,7 @@
 package com.example.buyer.screen
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.stateIn
 class SearchViewModel: ViewModel() {
     var searchQuery by mutableStateOf("")
         private set
+
 
     private val bookFlow = flowOf(
         Datasource().loadBooks()
@@ -42,3 +44,4 @@ class SearchViewModel: ViewModel() {
         searchQuery = newQuery
     }
 }
+

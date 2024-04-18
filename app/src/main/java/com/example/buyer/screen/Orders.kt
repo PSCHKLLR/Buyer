@@ -17,17 +17,28 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.buyer.model.Transaction
+
 
 @Composable
-fun BuyerOrders(navController: NavController, modifier: Modifier = Modifier) {
+fun BuyerOrders(
+    buyerViewModel: BuyerViewModel = viewModel(),
+    orderList: ArrayList<Transaction>,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     val scrollState = rememberScrollState()
+    val buyerUiState by buyerViewModel.uiState.collectAsState()
 
     Scaffold (
         modifier = modifier,

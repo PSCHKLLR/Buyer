@@ -27,7 +27,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.buyer.model.Book
 
 @Composable
-fun WishList(bookList: ArrayList<Book>, navController: NavController, modifier: Modifier = Modifier) {
+fun WishList(
+    bookList: ArrayList<Book>,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     Scaffold(
         modifier = modifier,
         topBar = {

@@ -12,9 +12,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             BuyerTheme {
                 Surface {
-                    Navigate()
+//                    Navigate()
                 }
             }
+            Navigate()
 
         }
     }

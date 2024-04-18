@@ -49,7 +49,8 @@ fun Search(viewModel: SearchViewModel, navController: NavController) {
         searchQuery = viewModel.searchQuery,
         searchResults = result,
         onSearchQueryChange = { viewModel.onSearchQueryChange(it)},
-        navController = navController)
+        navController = navController
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,7 +84,11 @@ fun Search(
                 onQueryChange = { text = it
                                 onSearchQueryChange(it)},
                 onSearch = {
-                    history.add(text)
+                    var isExisted = false
+                    history.forEach {
+                        if (it.equals(text) ) isExisted = true
+                    }
+                    if (!isExisted) history.add(text)
                     active = false
                 },
                 active = active,
@@ -112,7 +117,8 @@ fun Search(
                     Row(modifier = Modifier
                         .fillMaxWidth()
                         .padding(12.dp)
-                        .clickable { text = it }) {
+                        .clickable { text = it
+                        onSearchQueryChange(it)}) {
                         Icon(
                             imageVector = Icons.Filled.History,
                             contentDescription = null,
@@ -152,6 +158,7 @@ fun Search(
                     }
                 )
             }
+
         }
         
     }

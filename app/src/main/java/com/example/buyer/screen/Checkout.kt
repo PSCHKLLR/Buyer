@@ -43,7 +43,11 @@ import java.util.Locale
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Checkout(transaction: Transaction, navController: NavController, modifier: Modifier = Modifier) {
+fun Checkout(
+    transaction: Transaction,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     val scrollState = rememberScrollState()
 
     Scaffold (

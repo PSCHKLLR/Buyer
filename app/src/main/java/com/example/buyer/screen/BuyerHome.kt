@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -20,8 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -78,18 +75,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.buyer.Navigation
 import com.example.buyer.data.Datasource
 import com.example.buyer.model.Book
 import com.example.buyer.model.ListItem
+
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun Home(navController: NavController ,modifier: Modifier = Modifier){
+
     val listItems = listOf(
         ListItem(
             title = "For You",
@@ -177,12 +177,18 @@ fun Home(navController: NavController ,modifier: Modifier = Modifier){
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val bookList = Datasource().loadBooks()
+
     Column(modifier = modifier) {
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
                 ModalDrawerSheet {
-                    Text(text = "K-Store", modifier = Modifier.padding(16.dp))
+                    Text(
+                        text = "K-Store",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(16.dp)
+                    )
                     HorizontalDivider()
                     NavigationDrawerItem(
                         label = {
@@ -393,7 +399,7 @@ fun Home(navController: NavController ,modifier: Modifier = Modifier){
                                     )
                                     BookSlider(
                                         navController = navController,
-                                        bookList = bookList.shuffled(),
+                                        bookList = bookList,
                                         modifier = Modifier.height(200.dp)
                                     )
                                     Text(
@@ -405,17 +411,17 @@ fun Home(navController: NavController ,modifier: Modifier = Modifier){
                                     )
                                     BookSlider(
                                         navController = navController,
-                                        bookList = bookList.shuffled(),
+                                        bookList = bookList,
                                         modifier = Modifier.height(200.dp)
                                     )
                                     BookSlider(
                                         navController = navController,
-                                        bookList = bookList.shuffled(),
+                                        bookList = bookList,
                                         modifier = Modifier.height(200.dp)
                                     )
                                     BookSlider(
                                         navController = navController,
-                                        bookList = bookList.shuffled(),
+                                        bookList = bookList,
                                         modifier = Modifier.height(200.dp)
                                     )
                                 }
@@ -467,7 +473,8 @@ fun BookCard(navController: NavController, book: Book){
                 bottom = 12.dp,
                 start = 8.dp,
                 end = 8.dp,
-            ),
+            )
+            .clip(RoundedCornerShape(4.dp)),
         contentAlignment = Alignment.BottomStart
     ) {
         Image(
@@ -479,9 +486,8 @@ fun BookCard(navController: NavController, book: Book){
                 .clip(RoundedCornerShape(4.dp))
                 .clickable {
 //                    mContext.startActivity(Intent(mContext, BookDescription::class.java))
-
-                    navController.navigate(Navigation.BookDescription.name)
-
+//                    SampleViewModel().selectedBook(book)
+                    navController.navigate(Navigation.BookDescription.name + "/${book.bookId}")
                 },
             contentScale = ContentScale.Crop,
         )
