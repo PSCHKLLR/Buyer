@@ -41,13 +41,19 @@ fun Navigate(
 ){
     val buyerUiState by buyerViewModel.uiState.collectAsState()
     val navController = rememberNavController()
-    val orderList = ArrayList<Transaction>()
+
+    buyerUiState.user.five_percent = 2
+    buyerUiState.user.ten_percent = 2
+    buyerUiState.user.twenty_percent = 2
+    buyerUiState.user.fifty_ringgit = 0
+
+
     NavHost(
         navController = navController,
         startDestination = Navigation.Home.name
     ) {
         composable(route = Navigation.Home.name){
-            Home(navController = navController, modifier = Modifier.fillMaxSize())
+            Home(buyerViewModel = buyerViewModel, navController = navController, modifier = Modifier.fillMaxSize())
         }
         composable(
             route = Navigation.BookDescription.name + "/{BookId}",
@@ -55,9 +61,6 @@ fun Navigate(
                 navArgument("BookId"){
                     type = NavType.StringType
                 },
-//                navArgument("User"){
-//                    type = NavType.StringType
-//                }
             )
         ){
             Description(
@@ -89,23 +92,29 @@ fun Navigate(
 
             MyCart(
                 cartViewModel = buyerViewModel,
-                transaction = buyerUiState.transaction,
+                transaction = buyerUiState.currentTransaction,
                 navController = navController,
                 modifier = Modifier.fillMaxSize()
             )
         }
         composable(route = Navigation.Checkout.name){
 
-            Checkout(buyerUiState.transaction, navController = navController, modifier = Modifier.fillMaxSize())
+            Checkout(
+                buyerViewModel = buyerViewModel,
+                transaction = buyerUiState.currentTransaction,
+                navController = navController,
+                modifier = Modifier.fillMaxSize()
+            )
         }
         composable(route = Navigation.Orders.name){
 
             BuyerOrders(
                 buyerViewModel = buyerViewModel,
-                orderList = orderList,
+                orderList = buyerUiState.orderList,
                 navController = navController,
                 modifier = Modifier.fillMaxSize()
             )
+
         }
 
 //        navigation(

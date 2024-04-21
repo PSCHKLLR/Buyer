@@ -1,10 +1,6 @@
 package com.example.buyer.screen
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.buyer.data.Datasource
 import com.example.buyer.model.Book
 import com.example.buyer.model.CartItem
 import com.example.buyer.model.Transaction
@@ -17,20 +13,17 @@ class BuyerViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(BuyerUiState())
     val uiState: StateFlow<BuyerUiState> = _uiState.asStateFlow()
 
-
-
-
     //CART
-    fun calTotal(){
+    fun cartTotal(){
         var total = 0.00
-        uiState.value.transaction.cartList.forEach {
+        uiState.value.currentTransaction.cartList.forEach {
             total += (it.book.price * it.quantity)
         }
         updateCartState(updatedTotal = total)
     }
 
     fun addToCart(cartItem: CartItem){
-        val transaction = uiState.value.transaction
+        val transaction = uiState.value.currentTransaction
         var isExisted = false
         transaction.cartList.forEach {
             if (it.book.bookId.equals(cartItem.book.bookId)){
@@ -41,25 +34,18 @@ class BuyerViewModel: ViewModel() {
         if (!isExisted){
             transaction.cartList.add(cartItem)
         }
-        _uiState.update {
-            it.copy(
-                transaction = transaction
-            )
-        }
+        updateTransaction(transaction)
     }
 
     fun removeFromCart(cartItem: CartItem){
-        val transaction = uiState.value.transaction
+        val transaction = uiState.value.currentTransaction
         transaction.cartList.forEach {
             if (it.book.bookId.equals(cartItem.book.bookId)){
                 transaction.cartList.remove(it)
             }
         }
-        _uiState.update {
-            it.copy(
-                transaction = transaction
-            )
-        }
+        updateTransaction(transaction)
+
     }
     
     private fun updateCartState(updatedTotal: Double){
@@ -91,5 +77,43 @@ class BuyerViewModel: ViewModel() {
                 wishList = wishlist
             )
         }
+    }
+
+
+    //Checkout
+
+    fun shipping(method: String){
+        val transaction = uiState.value.currentTransaction
+        transaction.shipping = method
+        transaction.deliveryFee = when(method){
+            "Fast Delivery" -> 4.8
+            else -> 0.0
+        }
+        updateTransaction(transaction)
+    }
+
+    fun payment(method: String){
+        val transaction = uiState.value.currentTransaction
+        transaction.paymentMethod = method
+        updateTransaction(transaction)
+    }
+    fun updateTransaction(transaction: Transaction){
+        _uiState.update {
+            it.copy(
+                currentTransaction = transaction
+            )
+        }
+    }
+
+    fun calDisc(voucher: String) {
+        val transaction = uiState.value.currentTransaction
+        transaction.voucher = voucher
+        transaction.discount = when(voucher){
+            "5% Discount" -> transaction.calSubtotal() * .05
+            "10% Discount" -> transaction.calSubtotal() * .1
+            "20% Discount" -> transaction.calSubtotal() * .2
+            else -> 50.0
+        }
+        updateTransaction(transaction)
     }
 }

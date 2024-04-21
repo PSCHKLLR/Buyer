@@ -84,7 +84,8 @@ fun MyCart(
 //    var total by remember {
 //        mutableStateOf(transaction.total)
 //    }
-    cartViewModel.calTotal()
+    cartViewModel.cartTotal()
+    cartUiState.currentTransaction = transaction
     Column(modifier = modifier) {
         Scaffold(
             topBar = {
@@ -172,7 +173,7 @@ fun MyCart(
                                     text = "Checkout",
                                     modifier = Modifier.padding(4.dp)
                                 )
-                                isEnabled = transaction.cartList.isNotEmpty()
+                                isEnabled = cartUiState.currentTransaction.cartList.isNotEmpty()
                             }
                         }
                     }
@@ -184,7 +185,7 @@ fun MyCart(
                 .padding(it)
                 .verticalScroll(state = scrollState)
             ){
-                if (transaction.cartList.isEmpty()){
+                if (cartUiState.currentTransaction.cartList.isEmpty()){
                     Column (
                         modifier = Modifier
                             .fillMaxSize()
@@ -226,13 +227,14 @@ fun MyCart(
                         }
                     }
                 } else{
-                    transaction.cartList.forEach {item ->
+                    cartUiState.currentTransaction.cartList.forEach {item ->
                         ItemCheck(
                             cartViewModel = cartViewModel,
                             navController = navController,
                             cartItem = item,
                             isRemove = isRemove,
-                            modifier = Modifier.height(160.dp)
+                            modifier = Modifier.height(160.dp),
+                            active = true
                         )
                     }
                 }
@@ -248,6 +250,7 @@ fun ItemCheck(
     navController: NavController,
     isRemove: Boolean,
     cartItem: CartItem,
+    active: Boolean
 ){
 //    val mContext = LocalContext.current
     Box(modifier = modifier) {
@@ -256,8 +259,7 @@ fun ItemCheck(
                 .padding(horizontal = 8.dp, vertical = 4.dp)
                 .background(color = Color(0xFFCFD8DC), shape = RoundedCornerShape(8.dp))
                 .clickable {
-//                    mContext.startActivity(Intent(mContext, BookDescription::class.java))
-                    navController.navigate(Navigation.BookDescription.name)
+                    navController.navigate(Navigation.BookDescription.name + "/${cartItem.book.bookId}")
                 }
         ) {
             Box(modifier = Modifier.padding(8.dp)) {
@@ -303,7 +305,10 @@ fun ItemCheck(
                     }
                     Row {
                         IconButton(
-                            onClick = { cartViewModel.removeFromCart(cartItem) },
+                            onClick = {
+                                cartViewModel.removeFromCart(cartItem)
+                                cartViewModel.cartTotal()
+                                      },
                             enabled = isRemove,
                             modifier = Modifier
                                 .size(24.dp)
@@ -314,14 +319,17 @@ fun ItemCheck(
                             Icon(imageVector = Icons.Filled.Delete, contentDescription = "Remove From Cart")
                         }
                         Spacer(modifier = Modifier.width(8.dp))
-                        Stepper(
-                            count = count,
-                            onCountChanged = {
-                                count = it
-                                cartItem.updateQuantity(it)
-                            },
-                            onTotalChanged = { cartViewModel.calTotal() }
-                        )
+                        if (active){
+                            Stepper(
+                                count = count,
+                                onCountChanged = {
+                                    count = it
+                                    cartItem.updateQuantity(it)
+                                },
+                                onTotalChanged = { cartViewModel.cartTotal() }
+                            )
+                        }
+
                     }
                 }
 
@@ -352,7 +360,7 @@ fun PrevCart(modifier: Modifier = Modifier){
 fun Stepper(
     count: Int,
     onCountChanged: (Int) -> Unit,
-    onTotalChanged: ()-> Unit
+    onTotalChanged: ()-> Unit,
 ) {
 //    var count = cartItem.quantity
     val onRemove =  { onCountChanged(count - 1)

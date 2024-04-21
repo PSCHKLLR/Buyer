@@ -35,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -48,37 +49,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.buyer.Navigation
 import com.example.buyer.data.Datasource
 import com.example.buyer.model.Book
 import com.example.buyer.model.CartItem
-import com.example.buyer.model.Transaction
 import java.text.NumberFormat
 import java.util.Locale
 
-//class BookDescription : ComponentActivity() {
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContent {
-//            BuyerTheme {
-//                Surface {
-//                    val intent = Intent.getEx
-//                    Description(book = , navController = )
-//                }
-//            }
-//
-//        }
-//    }
-//}
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Description(
+    modifier: Modifier = Modifier,
     buyerViewModel: BuyerViewModel = viewModel(),
     bookId: String,
     navController: NavController,
-    modifier: Modifier = Modifier
 ) {
     val buyerUiState by buyerViewModel.uiState.collectAsState()
     val bookList = Datasource().loadBooks()
@@ -154,7 +139,9 @@ fun Description(
                         }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "back"
+                            contentDescription = "back",
+                            tint = Color.White,
+                            modifier = Modifier.shadow(elevation = 10.dp)
                         )
                     }
                     IconButton(onClick = {
@@ -211,11 +198,4 @@ fun Description(
 
         }
     }
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun BookDetail() {
-    val navController = rememberNavController()
-//    Description( "B006",navController, modifier = Modifier.fillMaxSize())
 }

@@ -1,7 +1,6 @@
 package com.example.buyer.screen
 
 import android.annotation.SuppressLint
-import android.os.Bundle
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,6 +41,8 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.TheaterComedy
 import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -58,6 +59,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -68,6 +70,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -75,7 +78,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavBackStackEntry
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.buyer.Navigation
@@ -88,8 +91,12 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun Home(navController: NavController ,modifier: Modifier = Modifier){
-
+fun Home(
+    modifier: Modifier = Modifier,
+    buyerViewModel: BuyerViewModel = viewModel(),
+    navController: NavController,
+){
+    val buyerUiState by buyerViewModel.uiState.collectAsState()
     val listItems = listOf(
         ListItem(
             title = "For You",
@@ -163,7 +170,6 @@ fun Home(navController: NavController ,modifier: Modifier = Modifier){
         )
     )
 
-//    val mContext = LocalContext.current
 
     LaunchedEffect(selectedTabIndex){
         if(!pagerState.isScrollInProgress){
@@ -206,13 +212,22 @@ fun Home(navController: NavController ,modifier: Modifier = Modifier){
                     )
                     NavigationDrawerItem(
                         label = {
-                            Row (
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ){
-                                Icon(imageVector = Icons.Filled.ShoppingCart, contentDescription = null)
-                                Spacer(modifier = Modifier.width(16.dp))
-                                Text(text = "Cart")
+                            BadgedBox(badge = {
+                                if (buyerUiState.currentTransaction.cartList.size > 0) {
+                                    Badge {
+                                        Text(text = "${buyerUiState.currentTransaction.cartList.size}")
+                                    }
+                                }
+                            }
+                            ) {
+                                Row (
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ){
+                                    Icon(imageVector = Icons.Filled.ShoppingCart, contentDescription = null)
+                                    Spacer(modifier = Modifier.width(16.dp))
+                                    Text(text = "Cart")
+                                }
                             }
                         },
                         selected = false,
@@ -308,13 +323,22 @@ fun Home(navController: NavController ,modifier: Modifier = Modifier){
                         actions = {
                             IconButton(
                                 onClick = {
-//                                mContext.startActivity(Intent(mContext, Cart::class.java))
                                     navController.navigate(Navigation.Cart.name)
+                                }
+                            ) {
+                                BadgedBox(badge = {
+                                    if (buyerUiState.currentTransaction.cartList.size > 0){
+                                        Badge{
+                                            Text(text = "${buyerUiState.currentTransaction.cartList.size}")
+                                        }
+                                    }
                                 }) {
-                                Icon(
-                                    imageVector = Icons.Filled.ShoppingCart,
-                                    contentDescription = "Cart"
-                                )
+                                    Icon(
+                                        imageVector = Icons.Filled.ShoppingCart,
+                                        contentDescription = "Cart"
+                                    )
+                                }
+
                             }
                             IconButton(
                                 onClick = {
@@ -485,8 +509,6 @@ fun BookCard(navController: NavController, book: Book){
                 .aspectRatio(3 / 4f)
                 .clip(RoundedCornerShape(4.dp))
                 .clickable {
-//                    mContext.startActivity(Intent(mContext, BookDescription::class.java))
-//                    SampleViewModel().selectedBook(book)
                     navController.navigate(Navigation.BookDescription.name + "/${book.bookId}")
                 },
             contentScale = ContentScale.Crop,
@@ -529,10 +551,3 @@ fun BookSlider(navController: NavController, bookList: List<Book>, modifier: Mod
     }
 }
 
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun BuyerApp(){
-    val navController = rememberNavController()
-    Home(navController, modifier = Modifier.fillMaxSize())
-}

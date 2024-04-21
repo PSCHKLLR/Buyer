@@ -78,8 +78,9 @@ fun WishList(
                 .padding(it)
                 .fillMaxSize()
         ) {
-            Text(text = "Krik Krik...")
-
+            if(bookList.isEmpty()){
+                Text(text = "Krik Krik...")
+            }
         }
     }
 }

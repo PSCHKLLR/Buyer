@@ -10,13 +10,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BuyerTheme {
+            BuyerTheme(
+                darkTheme = false,
+            ) {
                 Surface {
-//                    Navigate()
+                    Navigate()
                 }
             }
-            Navigate()
-
         }
     }
 }
