@@ -65,7 +65,7 @@ import com.example.buyer.Navigation
 import com.example.buyer.data.Datasource
 import com.example.buyer.model.Book
 import com.example.buyer.model.CartItem
-import com.example.buyer.model.Transaction
+import com.example.buyer.model.Order
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -74,7 +74,7 @@ import java.util.Locale
 fun MyCart(
     modifier: Modifier = Modifier,
     cartViewModel: BuyerViewModel = viewModel(),
-    transaction: Transaction,
+    order: Order,
     navController: NavController,
 ) {
     val cartUiState by cartViewModel.uiState.collectAsState()
@@ -85,7 +85,7 @@ fun MyCart(
 //        mutableStateOf(transaction.total)
 //    }
     cartViewModel.cartTotal()
-    cartUiState.currentTransaction = transaction
+    cartUiState.currentOrder = order
     Column(modifier = modifier) {
         Scaffold(
             topBar = {
@@ -173,7 +173,7 @@ fun MyCart(
                                     text = "Checkout",
                                     modifier = Modifier.padding(4.dp)
                                 )
-                                isEnabled = cartUiState.currentTransaction.cartList.isNotEmpty()
+                                isEnabled = cartUiState.currentOrder.cartList.isNotEmpty()
                             }
                         }
                     }
@@ -185,7 +185,7 @@ fun MyCart(
                 .padding(it)
                 .verticalScroll(state = scrollState)
             ){
-                if (cartUiState.currentTransaction.cartList.isEmpty()){
+                if (cartUiState.currentOrder.cartList.isEmpty()){
                     Column (
                         modifier = Modifier
                             .fillMaxSize()
@@ -227,7 +227,7 @@ fun MyCart(
                         }
                     }
                 } else{
-                    cartUiState.currentTransaction.cartList.forEach {item ->
+                    cartUiState.currentOrder.cartList.forEach { item ->
                         ItemCheck(
                             cartViewModel = cartViewModel,
                             navController = navController,
@@ -336,24 +336,6 @@ fun ItemCheck(
             }
         }
     }
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun PrevCart(modifier: Modifier = Modifier){
-    val navController = rememberNavController()
-    val bookList: List<Book> = Datasource().loadBooks()
-    val transaction = Transaction()
-    transaction.cartList.add(
-        CartItem(bookList[0], 1)
-    )
-    transaction.cartList.add(
-        CartItem(bookList[1], 3)
-    )
-    transaction.cartList.add(
-        CartItem(bookList[2], 1)
-    )
-    MyCart(transaction = transaction, navController = navController, modifier = Modifier.fillMaxSize())
 }
 
 @Composable

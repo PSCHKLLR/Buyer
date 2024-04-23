@@ -52,9 +52,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.buyer.Navigation
-import com.example.buyer.model.Transaction
+import com.example.buyer.model.Order
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
@@ -63,7 +62,7 @@ import java.util.Locale
 @Composable
 fun Checkout(
     buyerViewModel: BuyerViewModel = viewModel(),
-    transaction: Transaction,
+    order: Order,
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
@@ -79,7 +78,7 @@ fun Checkout(
     var selectPay by remember { mutableStateOf(false) }
 
 
-    buyerViewModel.updateTransaction(transaction)
+    buyerViewModel.updateTransaction(order)
     Scaffold (
         modifier = modifier,
         topBar = {
@@ -128,9 +127,9 @@ fun Checkout(
             ){
                 Button(
                     onClick = {
-                        buyerUiState.currentTransaction.dateOrdered = Date()
-                        buyerUiState.orderList.add(buyerUiState.currentTransaction)
-                        buyerUiState.currentTransaction = Transaction()
+                        buyerUiState.currentOrder.dateOrdered = Date()
+                        buyerUiState.orderList.add(buyerUiState.currentOrder)
+                        buyerUiState.currentOrder = Order()
                         option = ""
                         navController.navigate(Navigation.Home.name)
                               },
@@ -177,18 +176,18 @@ fun Checkout(
                 Spacer(modifier = Modifier.width(88.dp))
                 Column {
                     Text(
-                        text = buyerUiState.currentTransaction.shipping,
+                        text = buyerUiState.currentOrder.shipping,
                         textAlign = TextAlign.Right,
                         modifier = Modifier
                             .fillMaxWidth()
                     )
-                    selectShip = buyerUiState.currentTransaction.shipping != "Select Shipping Method"
+                    selectShip = buyerUiState.currentOrder.shipping != "Select Shipping Method"
                     Spacer(modifier = Modifier.height(12.dp))
                     var fee: String
-                    if (buyerUiState.currentTransaction.deliveryFee <= 0.0){
+                    if (buyerUiState.currentOrder.deliveryFee <= 0.0){
                         fee = "FREE"
                     } else {
-                        fee = NumberFormat.getCurrencyInstance(Locale("ms", "MY")).format(buyerUiState.currentTransaction.deliveryFee)
+                        fee = NumberFormat.getCurrencyInstance(Locale("ms", "MY")).format(buyerUiState.currentOrder.deliveryFee)
                     }
                     Text(
                         text = "DELIVERY - ${fee}",
@@ -228,10 +227,10 @@ fun Checkout(
                 )
                 Column {
                     Text(
-                        text = buyerUiState.currentTransaction.paymentMethod,
+                        text = buyerUiState.currentOrder.paymentMethod,
                         textAlign = TextAlign.Right,
                     )
-                    selectPay = buyerUiState.currentTransaction.paymentMethod != "Select Payment Method"
+                    selectPay = buyerUiState.currentOrder.paymentMethod != "Select Payment Method"
                 }
             }
             HorizontalDivider()
@@ -283,7 +282,7 @@ fun Checkout(
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = NumberFormat.getCurrencyInstance(Locale("ms", "MY")).format(buyerUiState.currentTransaction.calSubtotal()),
+                        text = NumberFormat.getCurrencyInstance(Locale("ms", "MY")).format(buyerUiState.currentOrder.calSubtotal()),
                         textAlign = TextAlign.Right
                     )
                 }
@@ -298,7 +297,7 @@ fun Checkout(
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = NumberFormat.getCurrencyInstance(Locale("ms", "MY")).format(buyerUiState.currentTransaction.calTax()),
+                        text = NumberFormat.getCurrencyInstance(Locale("ms", "MY")).format(buyerUiState.currentOrder.calTax()),
                         textAlign = TextAlign.Right
                     )
                 }
@@ -319,12 +318,12 @@ fun Checkout(
                     fontWeight = FontWeight.SemiBold
                 )
                 Column {
-                    var discount: String = " - " + NumberFormat.getCurrencyInstance(Locale("ms", "MY")).format(buyerUiState.currentTransaction.discount)
-                    if (buyerUiState.currentTransaction.discount <= 0.0) {
+                    var discount: String = " - " + NumberFormat.getCurrencyInstance(Locale("ms", "MY")).format(buyerUiState.currentOrder.discount)
+                    if (buyerUiState.currentOrder.discount <= 0.0) {
                         discount = ""
                     }
                     Text(
-                        text = buyerUiState.currentTransaction.voucher + discount,
+                        text = buyerUiState.currentOrder.voucher + discount,
                         textAlign = TextAlign.Right,
                     )
                 }
@@ -344,7 +343,7 @@ fun Checkout(
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = NumberFormat.getCurrencyInstance(Locale("ms", "MY")).format(buyerUiState.currentTransaction.calTotal()),
+                    text = NumberFormat.getCurrencyInstance(Locale("ms", "MY")).format(buyerUiState.currentOrder.calTotal()),
                     textAlign = TextAlign.Right,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -377,9 +376,9 @@ fun Checkout(
 @Composable
 fun PrevCheck() {
     val navController = rememberNavController()
-    val transaction = Transaction()
+    val order = Order()
 
-    Checkout(transaction = transaction, navController = navController, modifier = Modifier.fillMaxSize())
+    Checkout(order = order, navController = navController, modifier = Modifier.fillMaxSize())
 }
 
 @Composable

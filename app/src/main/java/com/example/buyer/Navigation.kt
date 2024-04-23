@@ -11,8 +11,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.buyer.model.Book
-import com.example.buyer.model.Transaction
 import com.example.buyer.screen.BuyerOrders
 import com.example.buyer.screen.BuyerViewModel
 import com.example.buyer.screen.Checkout
@@ -92,7 +90,7 @@ fun Navigate(
 
             MyCart(
                 cartViewModel = buyerViewModel,
-                transaction = buyerUiState.currentTransaction,
+                order = buyerUiState.currentOrder,
                 navController = navController,
                 modifier = Modifier.fillMaxSize()
             )
@@ -101,7 +99,7 @@ fun Navigate(
 
             Checkout(
                 buyerViewModel = buyerViewModel,
-                transaction = buyerUiState.currentTransaction,
+                order = buyerUiState.currentOrder,
                 navController = navController,
                 modifier = Modifier.fillMaxSize()
             )

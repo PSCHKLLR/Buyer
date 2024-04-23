@@ -1,9 +1,8 @@
 package com.example.buyer.model
 
-import java.text.NumberFormat
 import java.util.Date
 
-class Transaction(
+class Order(
     var transactionId: String = "",
     var cartList: ArrayList<CartItem> = ArrayList(),
     var paymentMethod: String = "Select Payment Method",

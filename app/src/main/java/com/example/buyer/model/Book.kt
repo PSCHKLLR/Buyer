@@ -1,6 +1,5 @@
 package com.example.buyer.model
 
-import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 

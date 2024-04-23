@@ -3,7 +3,7 @@ package com.example.buyer.screen
 import androidx.lifecycle.ViewModel
 import com.example.buyer.model.Book
 import com.example.buyer.model.CartItem
-import com.example.buyer.model.Transaction
+import com.example.buyer.model.Order
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,16 +16,16 @@ class BuyerViewModel: ViewModel() {
     //CART
     fun cartTotal(){
         var total = 0.00
-        uiState.value.currentTransaction.cartList.forEach {
+        uiState.value.currentOrder.cartList.forEach {
             total += (it.book.price * it.quantity)
         }
         updateCartState(updatedTotal = total)
     }
 
     fun addToCart(cartItem: CartItem){
-        val transaction = uiState.value.currentTransaction
+        val transaction = uiState.value.currentOrder
         var isExisted = false
-        transaction.cartList.forEach {
+        transaction.cartList.asReversed().forEach {
             if (it.book.bookId.equals(cartItem.book.bookId)){
                 it.updateQuantity(it.quantity+1)
                 isExisted = true
@@ -38,12 +38,14 @@ class BuyerViewModel: ViewModel() {
     }
 
     fun removeFromCart(cartItem: CartItem){
-        val transaction = uiState.value.currentTransaction
+        val transaction = uiState.value.currentOrder
+        val cartList = ArrayList<CartItem>()
         transaction.cartList.forEach {
-            if (it.book.bookId.equals(cartItem.book.bookId)){
-                transaction.cartList.remove(it)
+            if (!it.book.bookId.equals(cartItem.book.bookId)){
+                cartList.add(it)
             }
         }
+        transaction.cartList = cartList
         updateTransaction(transaction)
 
     }
@@ -83,7 +85,7 @@ class BuyerViewModel: ViewModel() {
     //Checkout
 
     fun shipping(method: String){
-        val transaction = uiState.value.currentTransaction
+        val transaction = uiState.value.currentOrder
         transaction.shipping = method
         transaction.deliveryFee = when(method){
             "Fast Delivery" -> 4.8
@@ -93,20 +95,21 @@ class BuyerViewModel: ViewModel() {
     }
 
     fun payment(method: String){
-        val transaction = uiState.value.currentTransaction
+        val transaction = uiState.value.currentOrder
         transaction.paymentMethod = method
         updateTransaction(transaction)
     }
-    fun updateTransaction(transaction: Transaction){
+
+    fun updateTransaction(order: Order){
         _uiState.update {
             it.copy(
-                currentTransaction = transaction
+                currentOrder = order
             )
         }
     }
 
     fun calDisc(voucher: String) {
-        val transaction = uiState.value.currentTransaction
+        val transaction = uiState.value.currentOrder
         transaction.voucher = voucher
         transaction.discount = when(voucher){
             "5% Discount" -> transaction.calSubtotal() * .05

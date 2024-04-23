@@ -38,13 +38,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.SecureFlagPolicy
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.buyer.model.CartItem
-import com.example.buyer.model.Transaction
+import androidx.navigation.compose.rememberNavController
+import com.example.buyer.model.Order
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -54,7 +55,7 @@ import java.util.Locale
 @Composable
 fun BuyerOrders(
     buyerViewModel: BuyerViewModel = viewModel(),
-    orderList: ArrayList<Transaction>,
+    orderList: ArrayList<Order>,
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
@@ -114,14 +115,14 @@ fun BuyerOrders(
             if(buyerUiState.orderList.isEmpty()){
                 Text(text = "Krikk.. Krikk..")
             }else{
-                buyerUiState.orderList.forEach {
-                    Row (
-                        modifier = Modifier.clickable {
+                buyerUiState.orderList.asReversed().forEach {
+                    OrderCard(
+                        order = it,
+                        click = {
+                            buyerUiState.showOrder = it
                             showSheet = true
                         }
-                    ){
-                        OrderCard(transaction = it)
-                    }
+                    )
                     HorizontalDivider()
                 }
                 if (showSheet){
@@ -147,7 +148,7 @@ fun BuyerOrders(
                         )
                         HorizontalDivider()
                         Spacer(modifier = Modifier.height(4.dp))
-                        buyerUiState.orderList[0].cartList.forEach {
+                        buyerUiState.showOrder.cartList.forEach {
                             ItemCheck(
                                 navController = navController,
                                 isRemove = false,
@@ -167,13 +168,15 @@ fun BuyerOrders(
 
 @Composable
 fun OrderCard(
-    transaction: Transaction
+    order: Order,
+    click: () -> Unit
 ) {
     Column (
         modifier = Modifier
             .fillMaxWidth()
             .height(160.dp)
             .background(shape = RectangleShape, color = Color(0xFFCFD8DC))
+            .clickable { click() }
             .padding(horizontal = 12.dp),
         verticalArrangement = Arrangement.Center
     ){
@@ -184,7 +187,7 @@ fun OrderCard(
                 modifier = Modifier.fillMaxWidth(.4f)
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Text(text = transaction.transactionId)
+            Text(text = order.transactionId)
         }
         Row {
             Text(
@@ -194,7 +197,7 @@ fun OrderCard(
 
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Text(text = "${SimpleDateFormat("dd MMM yyyy").format(transaction.dateOrdered)}")
+            Text(text = "${SimpleDateFormat("dd MMM yyyy").format(order.dateOrdered)}")
         }
         Row {
             Text(
@@ -204,7 +207,7 @@ fun OrderCard(
 
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Text(text = "${transaction.cartList.size}")
+            Text(text = "${order.cartList.size}")
         }
         Row {
             Text(
@@ -214,7 +217,7 @@ fun OrderCard(
 
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Text(text = NumberFormat.getCurrencyInstance(Locale("ms", "MY")).format(transaction.total))
+            Text(text = NumberFormat.getCurrencyInstance(Locale("ms", "MY")).format(order.total))
         }
         Row {
             Text(
@@ -224,7 +227,8 @@ fun OrderCard(
 
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Text(text = transaction.status)
+            Text(text = order.status)
         }
     }
 }
+
